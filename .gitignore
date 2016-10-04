@@ -1,0 +1,6 @@
+*~
+*.jar
+.idea
+.gradle
+bin
+out
