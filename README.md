@@ -8,10 +8,10 @@ To use this library, Java 1.7 or higher is needed.
 
 ## Getting Started
 
-First create a new AppConfigr with one of the factory methods and the Builder.
+First create a new AppConfigr instance with one of the factory methods and the Builder.
 
-´´´java
+```java
 AppConfigr configr = AppConfigr.fromDirectory("path/to/config/files").build();
-´´´
+```
 
 
