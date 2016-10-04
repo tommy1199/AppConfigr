@@ -2,5 +2,5 @@
 *.jar
 .idea
 .gradle
-bin
+build
 out
