@@ -24,7 +24,7 @@ Create a simple configuration class.
 
 ```java
 public class MyAppConfig {
-   // define default value by just assign them on initialization.
+   // define default values by just assign them on initialization.
    private int myInt = 0;
    private int myString = "default";
    

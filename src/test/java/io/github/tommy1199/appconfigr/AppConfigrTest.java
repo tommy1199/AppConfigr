@@ -1,5 +1,7 @@
 package io.github.tommy1199.appconfigr;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -10,6 +12,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class AppConfigrTest {
+
+    private File sampleConfigsDirectory;
+
+    @Before
+    public void setUp() throws Exception {
+        sampleConfigsDirectory = new File(this.getClass()
+                .getResource("/sample-configs")
+                .getFile());
+    }
 
     @Test
     public void shouldThrowNullPointerExIfGivenPathIsNull() {
@@ -61,31 +72,53 @@ public class AppConfigrTest {
 
     @Test
     public void shouldBuildIfPathExist() {
-        Path sampleConfigDir = new File(this.getClass()
-                .getResource("/sample-configs")
-                .getFile()).toPath();
-        AppConfigr.fromDirectory(sampleConfigDir)
-                .noCheck()
+        AppConfigr.fromDirectory(sampleConfigsDirectory.toPath())
                 .build();
     }
 
     @Test
     public void shouldBuildIfDirFileExist() {
-        File sampleConfigDir = new File(this.getClass()
-                .getResource("/sample-configs")
-                .getFile());
-        AppConfigr.fromDirectory(sampleConfigDir)
-                .noCheck()
+        AppConfigr.fromDirectory(sampleConfigsDirectory)
                 .build();
     }
 
     @Test
     public void shouldBuildIfStringPathExist() {
-        String sampleConfigDir = new File(this.getClass()
-                .getResource("/sample-configs")
-                .getFile()).getAbsolutePath();
-        AppConfigr.fromDirectory(sampleConfigDir)
-                .noCheck()
+        AppConfigr.fromDirectory(sampleConfigsDirectory.getAbsolutePath())
                 .build();
+    }
+
+    @Test
+    public void shouldLoadConfigWithNameDerivedFromClassName() {
+        AppConfigr cut = AppConfigr.fromDirectory(sampleConfigsDirectory)
+                .build();
+
+        SampleConfig config = cut.getConfig(SampleConfig.class);
+
+        assertThat(config.getSampleInt()).isEqualTo(12);
+        assertThat(config.getSampleString()).isEqualTo("this is a string");
+    }
+
+    @Test
+    public void shouldLoadConfigWithCustomName() {
+        AppConfigr cut = AppConfigr.fromDirectory(sampleConfigsDirectory)
+                .build();
+
+        SampleConfig config = cut.getConfig(SampleConfig.class, "custom.conf");
+
+        assertThat(config.getSampleInt()).isEqualTo(14);
+        assertThat(config.getSampleString()).isEqualTo("this is another string");
+    }
+
+    @Test
+    public void shouldLoadConfigWithAnotherFormat() {
+        AppConfigr cut = AppConfigr.fromDirectory(sampleConfigsDirectory)
+                .withFactory(new JsonFactory())
+                .build();
+
+        SampleConfig config = cut.getConfig(SampleConfig.class, "sample-config-in-json.conf");
+
+        assertThat(config.getSampleInt()).isEqualTo(12);
+        assertThat(config.getSampleString()).isEqualTo("this is a string");
     }
 }
