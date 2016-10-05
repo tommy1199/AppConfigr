@@ -25,12 +25,19 @@ Create a simple configuration class.
 ```java
 public class MyAppConfig {
    // define default values by just assign them on initialization.
-   private int myInt = 0;
-   private int myString = "default";
+   private int myInt;
+   private int myString;
    
    public int getMyInt() {return myInt;}
    public String getMyString() {return myString;}
 }
+```
+
+Create a file in the config folder ("path/to/config/files") with the name "my-app-config.conf" and the content
+
+```yaml
+myInt: 12
+myString: this is my configuration string
 ```
 
 Create a new AppConfigr instance with the configuration directory as parameter.
@@ -42,4 +49,17 @@ AppConfigr configr = AppConfigr.fromDirectory("path/to/config/files")
                                .build();
 ```
 
+Now the configuration file can be loaded and used in the application. The following
 
+```java
+MyAppConfig config = configr.getConfig(MyAppConfig.class);
+System.out.println("The value of myInt is [" + config.getMyInt() + "]");
+System.out.println("The value of myString is [" + config.getMyString() + "]");
+```
+
+will print:
+
+```
+The value of myInt is [12]
+The value of myString is [this is my configuration string]
+```
