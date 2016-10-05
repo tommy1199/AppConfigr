@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class AppConfigr {
 
-    public static final String DEFAULT_CONFIG_SUFFIX = ".conf";
+    private static final String DEFAULT_CONFIG_SUFFIX = ".conf";
     private static final String USER_DIR = "user.dir";
     private static final String DEFAULT_SUB_DIRECTORY = "config";
     private final Path basePath;
