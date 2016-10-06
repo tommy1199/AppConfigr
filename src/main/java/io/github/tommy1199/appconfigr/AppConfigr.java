@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -25,10 +27,12 @@ public class AppConfigr {
     private static final String DEFAULT_SUB_DIRECTORY = "config";
     private final Path basePath;
     private ObjectMapper mapper;
+    private VariableResolver resolver;
 
-    private AppConfigr(Path basePath, ObjectMapper mapper) {
+    private AppConfigr(Path basePath, ObjectMapper mapper, VariableResolver resolver) {
         this.basePath = basePath;
         this.mapper = mapper;
+        this.resolver = resolver;
     }
 
     /**
@@ -82,10 +86,8 @@ public class AppConfigr {
      * my-config.conf.
      *
      * @param clazz the class used for the mapping and for deriving the filename
-     *
-     * @throws IllegalArgumentException if the file cannot be found in the base path.
-     *
      * @return the loaded configuration data
+     * @throws IllegalArgumentException if the file cannot be found in the base path.
      */
     public <T> T getConfig(Class<T> clazz) {
         return getConfig(clazz, toFileName(clazz));
@@ -94,12 +96,10 @@ public class AppConfigr {
     /**
      * Loads configuration data from file with the given filename.
      *
-     * @param clazz the class used for the mapping
+     * @param clazz    the class used for the mapping
      * @param fileName the file name to be loaded
-     *
-     * @throws IllegalArgumentException if the file cannot be found in the base path.
-     *
      * @return the loaded configuration data
+     * @throws IllegalArgumentException if the file cannot be found in the base path.
      */
     public <T> T getConfig(Class<T> clazz, String fileName) {
         Path fullPath = getAbsoluteFilePath(fileName);
@@ -114,8 +114,19 @@ public class AppConfigr {
     }
 
     private <T> T createConfig(Class<T> clazz, Path fullPath) throws IOException {
-            String content = readContent(fullPath);
-            return mapper.readValue(content, clazz);
+        String raw = readContent(fullPath);
+        String content = replaceVariables(raw);
+        return mapper.readValue(content, clazz);
+    }
+
+    private String replaceVariables(String content) throws IOException {
+        String out = content;
+        List<Variables.Expression> variables = Variables.find(content);
+        for (Variables.Expression variable : variables) {
+            String value = resolver.get(variable.getValue());
+            out = out.replaceAll(Pattern.quote(variable.toString()), value);
+        }
+        return out;
     }
 
     private String readContent(Path filePath) throws IOException {
@@ -137,10 +148,15 @@ public class AppConfigr {
         return Paths.get(basePath.toString(), fileName);
     }
 
+    /**
+     * Creates a AppConfigr instance.
+     */
     public static class Builder {
         private final Path path;
         private boolean checkDirectory = true;
         private JsonFactory factory = new YAMLFactory();
+        private VariableResolver resolver = VariableResolver.fromSystemProperties()
+                .withFallback(VariableResolver.fromEnvironment());
 
 
         private Builder(Path path) {
@@ -171,9 +187,22 @@ public class AppConfigr {
             return this;
         }
 
+        /**
+         * Changes the way how variables in the configuration files will be resolved.
+         *
+         * @throws NullPointerException if the given resolver is {@code null}
+         */
+        public Builder withResolvingStrategy(VariableResolver resolver) {
+            this.resolver = checkNotNull(resolver, "The given resolver must not be null");
+            return this;
+        }
+
+        /**
+         * Creates a new instance of AppConfigr.
+         */
         public AppConfigr build() {
             validate();
-            return new AppConfigr(path, new ObjectMapper(factory));
+            return new AppConfigr(path, new ObjectMapper(factory), resolver);
         }
 
         private void validate() {

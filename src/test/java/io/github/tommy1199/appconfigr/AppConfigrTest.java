@@ -2,7 +2,10 @@ package io.github.tommy1199.appconfigr;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
+import org.junit.contrib.java.lang.system.ProvideSystemProperty;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -12,6 +15,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class AppConfigrTest {
+
+    @Rule
+    public final EnvironmentVariables envs = new EnvironmentVariables();
+
+    @Rule
+    public final ProvideSystemProperty property1 = new ProvideSystemProperty("REPLACE_ME_WITH_SYS_PROP_STRING", "good" +
+            " morning");
 
     private File sampleConfigsDirectory;
 
@@ -120,5 +130,29 @@ public class AppConfigrTest {
 
         assertThat(config.getSampleInt()).isEqualTo(12);
         assertThat(config.getSampleString()).isEqualTo("this is a string");
+    }
+
+    @Test
+    public void shouldLoadAndReplaceVariables() {
+        envs.set("REPLACE_ME_WITH_ENV_INT", "20");
+        AppConfigr cut = AppConfigr.fromDirectory(sampleConfigsDirectory)
+                .build();
+
+        SampleConfig config = cut.getConfig(SampleConfig.class, "custom-with-variables.conf");
+
+        assertThat(config.getSampleInt()).isEqualTo(20);
+        assertThat(config.getSampleString()).isEqualTo("good morning");
+    }
+
+    @Test
+    public void shouldReplaceFirstWithSystemProperties() {
+        envs.set("REPLACE_ME_WITH_ENV_INT", "0");
+        envs.set("REPLACE_ME_WITH_SYS_PROP_STRING", "also defined by system property");
+        AppConfigr cut = AppConfigr.fromDirectory(sampleConfigsDirectory)
+                .build();
+
+        SampleConfig config = cut.getConfig(SampleConfig.class, "custom-with-variables.conf");
+
+        assertThat(config.getSampleString()).isEqualTo("good morning");
     }
 }
