@@ -1,6 +1,4 @@
-## Build Status
-
-[![Build Status](https://travis-ci.org/Tommy1199/AppConfigr.svg?branch=master)](https://travis-ci.org/Tommy1199/AppConfigr)
+# AppConfigr  [![Build Status](https://travis-ci.org/Tommy1199/AppConfigr.svg?branch=master)](https://travis-ci.org/Tommy1199/AppConfigr) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://raw.githubusercontent.com/tommy1199/appconfigr/master/LICENSE)
 
 ## Overview
 
