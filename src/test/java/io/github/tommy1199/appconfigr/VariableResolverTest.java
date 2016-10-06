@@ -29,6 +29,12 @@ public class VariableResolverTest {
         assertThat(cut).isEqualTo("value");
     }
 
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerExceptionWhenGivenVariableNameIsNull() {
+        VariableResolver.fromSystemProperties()
+                .get(null);
+    }
+
     @Test(expected = ConfigurationException.class)
     public void shouldThrowConfigurationExceptionWhenVariableCannotBeResolvedBySystemProperties() {
         VariableResolver.fromSystemProperties()

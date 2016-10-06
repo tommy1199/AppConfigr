@@ -1,8 +1,14 @@
 package io.github.tommy1199.appconfigr;
 
+import com.google.common.base.Preconditions;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public abstract class VariableResolver {
 
     public String get(String variableName) {
+        checkNotNull(variableName, "Variable Name must not be null");
+        
         Result result = resolve(variableName);
         if (result instanceof Result.Some) {
             return result.get();
