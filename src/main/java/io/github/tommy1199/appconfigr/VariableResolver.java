@@ -1,24 +1,18 @@
 package io.github.tommy1199.appconfigr;
 
-import com.google.common.base.Preconditions;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Returns a value for a given variable and is used by the {@link AppConfigr} to resolve variables in the
+ * configuration files. It provides ready to use providers based on environment variables and system properties.
+ */
 public abstract class VariableResolver {
 
-    public String get(String variableName) {
-        checkNotNull(variableName, "Variable Name must not be null");
-        
-        Result result = resolve(variableName);
-        if (result instanceof Result.Some) {
-            return result.get();
-        } else {
-            throw new ConfigurationException(((Result.None)result).getMsg());
-        }
-    }
-
-    abstract Result resolve(String variableName);
-
+    /**
+     * Returns a VariableResolver which is based on environment variables.
+     *
+     * @return a resolver which is backed by environment variables.
+     */
     public static VariableResolver fromEnvironment() {
         return new VariableResolver() {
             @Override
@@ -33,6 +27,11 @@ public abstract class VariableResolver {
         };
     }
 
+    /**
+     * Returns a VariableResolver which is based on system properties. This VariableResolver is case-sensitive.
+     *
+     * @return a resolver which is backed by system properties.
+     */
     public static VariableResolver fromSystemProperties() {
         return new VariableResolver() {
             @Override
@@ -47,6 +46,36 @@ public abstract class VariableResolver {
         };
     }
 
+    /**
+     * Returns the resolved value for the given variable name.
+     *
+     * @return the resolved value for the given variableName.
+     * @throws NullPointerException if the given variableName is {@code null}
+     */
+    final public String get(String variableName) {
+        checkNotNull(variableName, "Variable Name must not be null");
+
+        Result result = resolve(variableName);
+        if (result instanceof Result.Some) {
+            return result.get();
+        } else {
+            throw new ConfigurationException(((Result.None) result).getMsg());
+        }
+    }
+
+    /**
+     * Should be implemented by subclasses. This method should not throw any exception, but should return a
+     * {@link Result.None} with a describing message instead.
+     */
+    abstract Result resolve(String variableName);
+
+    /**
+     * Returns a new VariableResolver which uses first {@code this} to resolve the variable than the fallback
+     * resolver. If none of them can resolve the variable a {@link ConfigurationException} is thrown with the
+     * combined messages of both internal resolvers.
+     *
+     * @return a resolver which first use {@code this}, then the fallback resolver
+     */
     public VariableResolver withFallback(VariableResolver fallback) {
         return new WithFallbackResolver(this, fallback);
     }
@@ -82,13 +111,11 @@ public abstract class VariableResolver {
 
 
     /**
-     * Used internally as data structure if a resolver can resolve a variable.
+     * Used internally as data structure for results of an resolver.
      */
     public static abstract class Result {
         private Result() {
         }
-
-        public abstract String get();
 
         public static Result some(String value) {
             return new Some(value);
@@ -98,7 +125,9 @@ public abstract class VariableResolver {
             return new None(msg);
         }
 
-        private static class Some extends Result{
+        public abstract String get();
+
+        private static class Some extends Result {
             private final String value;
 
             private Some(String value) {
@@ -111,7 +140,7 @@ public abstract class VariableResolver {
             }
         }
 
-        private static class None extends Result{
+        private static class None extends Result {
             private final String msg;
 
             private None(String msg) {

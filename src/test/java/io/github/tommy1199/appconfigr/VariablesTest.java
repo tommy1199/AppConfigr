@@ -14,6 +14,7 @@ public class VariablesTest {
 
         List<Variables.Expression> variables = Variables.find(content);
 
-        assertThat(variables).extracting("value", String.class).containsExactly("test", "blub");
+        assertThat(variables).extracting("value", String.class)
+                .containsExactly("test", "blub");
     }
 }

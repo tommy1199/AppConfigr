@@ -199,6 +199,8 @@ public class AppConfigr {
 
         /**
          * Creates a new instance of AppConfigr.
+         *
+         * @throws IllegalArgumentException if the base path is not a valid directory.
          */
         public AppConfigr build() {
             validate();

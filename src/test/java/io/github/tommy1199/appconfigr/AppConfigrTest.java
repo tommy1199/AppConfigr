@@ -1,7 +1,6 @@
 package io.github.tommy1199.appconfigr;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,7 +10,6 @@ import org.junit.contrib.java.lang.system.ProvideSystemProperty;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
