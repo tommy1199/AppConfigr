@@ -1,6 +1,7 @@
 package io.github.tommy1199.appconfigr;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import org.junit.contrib.java.lang.system.ProvideSystemProperty;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -154,5 +156,26 @@ public class AppConfigrTest {
         SampleConfig config = cut.getConfig(SampleConfig.class, "custom-with-variables.conf");
 
         assertThat(config.getSampleString()).isEqualTo("good morning");
+    }
+
+    @Test
+    public void shouldReplaceVariablesWithCustomResolver() {
+        VariableResolver myResolver = new VariableResolver() {
+            @Override
+            Result resolve(String variableName) {
+                if (variableName.equals("NUMBER")) return Result.some("100");
+                if (variableName.equals("STRING")) return Result.some("YIPPIE");
+                return Result.none("");
+            }
+        };
+
+        AppConfigr cut = AppConfigr.fromDirectory(sampleConfigsDirectory)
+                .withResolvingStrategy(myResolver)
+                .build();
+
+        SampleConfig config = cut.getConfig(SampleConfig.class, "custom-resolver.conf");
+
+        assertThat(config.getSampleString()).isEqualTo("YIPPIE");
+        assertThat(config.getSampleInt()).isEqualTo(100);
     }
 }
