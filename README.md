@@ -9,9 +9,10 @@ its databind capabilities. It has the following key features:
 
 - Provide access to configuration files in a dedicated configuration directory
 - Support of environment variables and system properties in configuration files
-- Support of properties in configuration files for internationalization purposes
 - Support of different file formats (whatever is supported by Jackson databind)
-- Support of updatable configuration data
+
+- Support of properties in configuration files for internationalization purposes (future release)
+- Support of updatable configuration data (future release)
 
 ## Prerequisites
 
@@ -40,6 +41,8 @@ myInt: 12
 myString: this is my configuration string
 ```
 
+> The default file format for the configuration files is yaml. It can be changed, see [here](#dataformats)
+
 Create a new AppConfigr instance with the configuration directory as parameter.
 
 ```java
@@ -63,3 +66,9 @@ will print:
 The value of myInt is [12]
 The value of myString is [this is my configuration string]
 ```
+
+## Variable Usage
+
+## Own Resolver
+
+## Other data formats<a name="dataformats"></a>
