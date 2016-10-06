@@ -11,8 +11,9 @@ its databind capabilities. It has the following key features:
 - Support of environment variables and system properties in configuration files
 - Support of different file formats (whatever is supported by Jackson databind)
 
-- Support of properties in configuration files for internationalization purposes (future release)
-- Support of updatable configuration data (future release)
+## Future topics
+- Support of properties in configuration files for internationalization purposes
+- Support of updatable configuration data
 
 ## Prerequisites
 
@@ -42,6 +43,7 @@ myString: this is my configuration string
 ```
 
 > The default file format for the configuration files is yaml. It can be changed, see [here](#dataformats)
+
 
 Create a new AppConfigr instance with the configuration directory as parameter.
 
