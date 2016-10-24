@@ -69,6 +69,49 @@ The value of myString is [this is my configuration string]
 
 ## Variable Usage
 
+On top of the rich features already provided by jackson, it is possible to use variables in the configuration files. 
+As default AppConfigr tries to resolve the variables by System Properties and then by Environment Variables in this 
+order.
+
+If we change the content of the configuration file in the **Getting Started** section to:
+
+```yaml
+myInt: ${props.int}
+myString: ${props.string}
+```
+
+and set the properties on application startup
+
+```bash
+java -Dprops.int=12 -Dprops.string="this is my configuration string" ...
+```
+
+we would get the same output.
+
+## Custom Configuration File Names
+
+The normal behaviour of AppConfigr is to use the configuration class name for looking up the file name. The rule is 
+to use transform the class name to a lowercase hyphenated version with **.conf** suffix. An example can be seen below.
+
+MyOwnConfiguration.class --> my-own-configuration.conf
+ 
+If you want to specify an own file name, e.g. if you have several files with the same mapping, you can just use the 
+overloaded method
+
+```java
+MyAppConfig config = configr.getConfig(MyAppConfig.class, "my-custom-filename.conf");
+```
+
 ## Own Resolver
+If you want to change the way variables are resolved by AppConfigr, you can define an own Resolver and set it on the 
+Builder. Defining an own resolver is pretty simple, just extend the class VariableResolver.
+
+```java
+public class MyOwnResolver extends VariableResolver {
+
+}
+```
+
+## Chaining Resolvers
 
 ## Other data formats<a name="dataformats"></a>
