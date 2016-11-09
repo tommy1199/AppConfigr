@@ -108,10 +108,95 @@ Builder. Defining an own resolver is pretty simple, just extend the class Variab
 
 ```java
 public class MyOwnResolver extends VariableResolver {
-
+    @Override
+    Result resolve(String variableName) {
+        // here resolve the variable 
+    }
 }
 ```
 
+Then simply use it during building AppConfigr instance
+
+```java
+AppConfigr.fromDirectory("path/to/config/files")
+          .withResolvingStrategy(new MyOwnResolver())
+          .build();
+```
+
+> The resolve method should not throw any exception, but should return a Result.None instead. The factory method 
+Result.none(String message) can be used for that.
+
 ## Chaining Resolvers
 
+Resolvers can be chained together. In the example we have two resolvers, one which resolves every variable to the 
+String "FIRST" except the variable name "unknown" and the other resolves all to "FALLBACK".
+
+```java
+public class FirstResolver extends VariableResolver {
+    @Override
+    Result resolve(String variableName) {
+        if ("unknown".equals(variableName)) {
+            return Result.none("this is unknown by me");
+        } else {
+            return Result.some("FIRST");
+        } 
+    }
+}
+
+public class FallbackResolver extends VariableResolver {
+    @Override
+    Result resolve(String variableName) {
+        return Result.some("FALLBACK"); 
+    }
+}
+```
+
+With a config file based on the first example
+
+```yaml
+myInt: 12
+myString: ${this} ${is} ${unknown}
+```
+
+the following code
+
+```java
+VariableResolver resolver = new FirstResolver().withFallback(new FallbackResolver());
+
+AppConfigr configr = AppConfigr.fromDirectory("path/to/config/files")
+                               .withResolvingStrategy(resolver)
+                               .build();
+                               
+MyAppConfig config = configr.getConfig(AppConfig.class);
+
+System.out.println("The value of myString is [" + config.getMyString() + "]");
+```
+
+would print 
+
+```
+The value of myString is [FIRST FIRST UNKNOWN]
+```
+
 ## Other data formats<a name="dataformats"></a>
+
+The default format used by AppConfigr is yaml. But as AppConfigr is based on Jackson the supported format can be 
+switched easily. If you want to use e.g. Json as configuration format for the example in the "Getting started" 
+section like this
+
+```json
+{
+  "myInt": "12",
+  "myString": "this is a string"
+}
+````
+
+you only have to do the following
+
+```java
+AppConfigr configr = AppConfigr.fromDirectory("path/to/config/files")
+                               .withFactory(new JsonFactory)
+                               .build();
+```
+
+Features like the variable resolving can be used for all formats supported by Jackson.
