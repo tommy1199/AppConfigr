@@ -27,7 +27,7 @@ bintray {
 		licenses = ['MIT']
 		vcsUrl = 'https://github.com/Tommy1199/AppConfigr.git'
 		version {
-			name = "${version}"
+			name = '1.0'
 			released  = new Date()
 		}
 	}
