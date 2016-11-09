@@ -1,4 +1,4 @@
-# AppConfigr  [![Build Status](https://travis-ci.org/Tommy1199/AppConfigr.svg?branch=master)](https://travis-ci.org/Tommy1199/AppConfigr) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://raw.githubusercontent.com/tommy1199/appconfigr/master/LICENSE)
+# AppConfigr  [![Build Status](https://travis-ci.org/Tommy1199/AppConfigr.svg?branch=master)](https://travis-ci.org/Tommy1199/AppConfigr) [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://raw.githubusercontent.com/tommy1199/appconfigr/master/LICENSE)[ ![Download](https://api.bintray.com/packages/tommy1199/appconfigr/AppConfigr/images/download.svg) ](https://bintray.com/tommy1199/appconfigr/AppConfigr/_latestVersion)
 
 ## Overview
 
