@@ -1,5 +1,7 @@
 plugins {
+    id "com.jfrog.bintray" version "1.7"
     id 'java'
+    id 'maven'
 }
 
 repositories {
@@ -13,4 +15,20 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'com.github.stefanbirkner:system-rules:1.16.0'
     testCompile 'org.assertj:assertj-core:2.5.0'
+}
+
+bintray {	
+	user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+	key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+	configurations = ['archives']
+	pkg {
+		repo = 'appconfigr'
+		name = 'AppConfigr'
+		licenses = ['MIT']
+		vcsUrl = 'https://github.com/Tommy1199/AppConfigr.git'
+		version {
+			name = "${version}"
+			released  = new Date()
+		}
+	}
 }
