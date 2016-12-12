@@ -175,7 +175,7 @@ System.out.println("The value of myString is [" + config.getMyString() + "]");
 would print 
 
 ```
-The value of myString is [FIRST FIRST UNKNOWN]
+The value of myString is [FIRST FIRST FALLBACK]
 ```
 
 ## Other data formats<a name="dataformats"></a>
@@ -195,7 +195,7 @@ you only have to do the following
 
 ```java
 AppConfigr configr = AppConfigr.fromDirectory("path/to/config/files")
-                               .withFactory(new JsonFactory)
+                               .withFactory(new JsonFactory())
                                .build();
 ```
 
